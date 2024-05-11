@@ -224,11 +224,6 @@ document.querySelector(".shareBtn").addEventListener("click", function() {
 });
 
 // Function to handle sharing for the second countdown
-document.querySelector(".shareBtn2").addEventListener("click", function() {
-    shareCountdown('.2days-', '.2hours-', '.2min-', secondDays, secondHours, secondMinutes, "assets/east-countdown.png", "#FFBD59");
-});
-
-// Function to share countdown image
 function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minutes, imagePath, textColor) {
     // Create a new canvas element
     var canvas = document.createElement("canvas");
@@ -284,43 +279,36 @@ function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minute
             // Convert canvas to data URL
             var dataURL = canvas.toDataURL();
 
-            // Create a new HTML page dynamically
-            var newPageContent = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Countdown Image</title>
-                </head>
-                <body>
-                    <img src="${dataURL}" alt="Countdown Image">
-                </body>
-                </html>
-            `;
+            // Use the Web Share API to open the native share menu
+            if (navigator.share) {
+                // Convert the data URL to a blob
+                fetch(dataURL)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // Create a file object from the blob
+                        const file = new File([blob], "countdown_image.png", { type: "image/png" });
 
-            console.log(newPageContent); // Log the HTML content to check if it's formed correctly
-
-            // Create a Blob object containing the HTML content
-            var blob = new Blob([newPageContent], { type: "text/html" });
-
-            // Create a URL for the Blob
-            var url = URL.createObjectURL(blob);
-
-            // Open the new HTML page in a new tab
-            window.open(url, "_blank");
-
-            // Clean up by revoking the URL
-            URL.revokeObjectURL(url);
+                        // Share the file using the Web Share API
+                        navigator.share({
+                            files: [file],
+                            title: "Countdown Image",
+                            text: "Check out this countdown image!"
+                        })
+                        .then(() => console.log('Successful share'))
+                        .catch((error) => console.log('Error sharing:', error));
+                    })
+                    .catch(error => console.log('Error converting data URL to blob:', error));
+            } else {
+                console.log("Web Share API not supported");
+                // Fallback for browsers that don't support Web Share API
+                // Here you can provide an alternative sharing method or UI
+            }
         });
     };
 
     // Set the image source
     img.src = imagePath;
 }
-
-
-
 
 countdown1();
 countdown2();
