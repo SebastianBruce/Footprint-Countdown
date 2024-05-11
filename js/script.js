@@ -257,7 +257,7 @@ function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minute
                 { x: 722, y: 624 }
             ];
 
-            // If the value is only one number, add a 0 infront
+            // If the value is only one number, add a 0 in front
             if (days.toString().length <= 1) {
                 days = "0" + days;
             }
@@ -284,15 +284,43 @@ function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minute
             // Convert canvas to data URL
             var dataURL = canvas.toDataURL();
 
-            // Open the data URL in a new tab
-            var newTab = window.open();
-            newTab.document.write('<img src="' + dataURL + '" />');
+            // Create a new HTML page dynamically
+            var newPageContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Countdown Image</title>
+                </head>
+                <body>
+                    <img src="${dataURL}" alt="Countdown Image">
+                </body>
+                </html>
+            `;
+
+            console.log(newPageContent); // Log the HTML content to check if it's formed correctly
+
+            // Create a Blob object containing the HTML content
+            var blob = new Blob([newPageContent], { type: "text/html" });
+
+            // Create a URL for the Blob
+            var url = URL.createObjectURL(blob);
+
+            // Open the new HTML page in a new tab
+            window.open(url, "_blank");
+
+            // Clean up by revoking the URL
+            URL.revokeObjectURL(url);
         });
     };
 
     // Set the image source
     img.src = imagePath;
 }
+
+
+
 
 countdown1();
 countdown2();
