@@ -224,6 +224,11 @@ document.querySelector(".shareBtn").addEventListener("click", function() {
 });
 
 // Function to handle sharing for the second countdown
+document.querySelector(".shareBtn2").addEventListener("click", function() {
+    shareCountdown('.2days-', '.2hours-', '.2min-', secondDays, secondHours, secondMinutes, "assets/east-countdown.png", "#FFBD59");
+});
+
+// Function to share countdown image
 function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minutes, imagePath, textColor) {
     // Create a new canvas element
     var canvas = document.createElement("canvas");
@@ -252,7 +257,7 @@ function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minute
                 { x: 722, y: 624 }
             ];
 
-            // If the value is only one number, add a 0 in front
+            // If the value is only one number, add a 0 infront
             if (days.toString().length <= 1) {
                 days = "0" + days;
             }
@@ -279,30 +284,9 @@ function shareCountdown(daysClass, hoursClass, minutesClass, days, hours, minute
             // Convert canvas to data URL
             var dataURL = canvas.toDataURL();
 
-            // Use the Web Share API to open the native share menu
-            if (navigator.share) {
-                // Convert the data URL to a blob
-                fetch(dataURL)
-                    .then(response => response.blob())
-                    .then(blob => {
-                        // Create a file object from the blob
-                        const file = new File([blob], "countdown_image.png", { type: "image/png" });
-
-                        // Share the file using the Web Share API
-                        navigator.share({
-                            files: [file],
-                            title: "Countdown Image",
-                            text: "Check out this countdown image!"
-                        })
-                        .then(() => console.log('Successful share'))
-                        .catch((error) => console.log('Error sharing:', error));
-                    })
-                    .catch(error => console.log('Error converting data URL to blob:', error));
-            } else {
-                console.log("Web Share API not supported");
-                // Fallback for browsers that don't support Web Share API
-                // Here you can provide an alternative sharing method or UI
-            }
+            // Open the data URL in a new tab
+            var newTab = window.open();
+            newTab.document.write('<img src="' + dataURL + '" />');
         });
     };
 
